@@ -13,7 +13,7 @@ public class LoginPresenter implements LoginContract.ILoginPresenter {
     private LoginContract.ILoginView loginActivity;
 
 
-    public LoginPresenter(LoginContract.ILoginView loginActivity) {
+    LoginPresenter(LoginContract.ILoginView loginActivity) {
 
         this.loginActivity = loginActivity;
     }

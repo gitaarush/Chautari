@@ -1,9 +1,10 @@
 package com.sns.chautari.login;
 
 import android.app.ProgressDialog;
-import android.support.v4.app.FragmentActivity;
+import android.content.Intent;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -12,19 +13,22 @@ import android.widget.Toast;
 import com.sns.chautari.BuildConfig;
 import com.sns.chautari.R;
 import com.sns.chautari.common.Constants;
+import com.sns.chautari.common.MainActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * LoginActivity ONLY knows how to display views and sending events and data to the presenter
  * LoginActivity doesn't know anything about the model/repository
  */
-public class LoginActivity extends FragmentActivity implements LoginContract.ILoginView {
+public class LoginActivity extends AppCompatActivity implements LoginContract.ILoginView {
 
     LoginContract.ILoginPresenter loginPresenter;
     ProgressDialog progressDialog;
+    private Unbinder unbinder;
 
     // UI references.
     @BindView(R.id.email)
@@ -42,10 +46,10 @@ public class LoginActivity extends FragmentActivity implements LoginContract.ILo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
 
         // Temporary setting for debugging
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             mEmailView.setText(Constants.DUMMY_USER_NAME);
             mPasswordView.setText(Constants.DUMMY_PASSWORD);
         }
@@ -54,7 +58,7 @@ public class LoginActivity extends FragmentActivity implements LoginContract.ILo
     }
 
     @OnClick(R.id.email_sign_in_button)
-    void onSignInButtonClick(View view) {
+    void onSignInButtonClick() {
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
@@ -110,18 +114,26 @@ public class LoginActivity extends FragmentActivity implements LoginContract.ILo
 //        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
 
         //OPTION 2: Shows the progress dialog
-        if(show) {
+        if (show) {
             progressDialog = ProgressDialog.show(this, "Authenticating...", null);
         } else {
             progressDialog.dismiss();
-            }
+        }
+    }
+
+    @Override
+    public void openDashboardActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("username", mEmailView.getText().toString());
+        startActivity(intent);
     }
 
     @Override
     public void onLoginSuccess() {
         //Open dashboard
         showLoginProgress(false);
-        Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_LONG).show();
+        Toast.makeText(LoginActivity.this, "Login Success", Toast.LENGTH_SHORT).show();
+        openDashboardActivity();
     }
 
     @Override
@@ -129,6 +141,12 @@ public class LoginActivity extends FragmentActivity implements LoginContract.ILo
         showLoginProgress(false);
         mEmailView.requestFocus();
         Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbinder.unbind();
     }
 }
 

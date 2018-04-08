@@ -2,17 +2,18 @@ package com.sns.chautari.login;
 
 public interface LoginContract {
 
-    public interface ILoginView {
+    interface ILoginView {
         void onLoginSuccess();
         void onLoginFailure();
         void showLoginProgress(boolean show);
+        void openDashboardActivity();
     }
 
-    public interface ILoginPresenter {
+    interface ILoginPresenter {
         void attemptLogin(String username, String password);
     }
 
-    public interface ILoginRepository {
-        //TODO: Will be implemented later
-    }
+//    interface ILoginRepository {
+//        //TODO: Will be implemented later
+//    }
 }
